@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
+import Providers from "@/providers/providers";
+import AnimatedBackground from "@/ui/components/AnimatedBackground";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const cairo = Cairo({
+  weight: ["400", "500", "600", "700", "800", "900", "1000", "300", "200"],
   subsets: ["latin"],
 });
 
@@ -24,10 +21,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${cairo.className} antialiased`}>
+        <Providers>
+          <div className="relative flex min-h-screen w-full flex-col items-center">
+            <AnimatedBackground />
+            <div className="relative z-10 flex w-full max-w-7xl flex-1 flex-col px-4 sm:px-6 lg:px-8">
+              {children}
+            </div>
+          </div>
+        </Providers>
       </body>
     </html>
   );
