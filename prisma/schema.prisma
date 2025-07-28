@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================= ENUMS ==============================================================================
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ArtworkType {
+  INDIVIDUAL
+  GROUP
+}
+
+// ============================================= TABLES ==============================================================================
+model User {
+  id         String @id @default(cuid())
+  name       String
+  email      String @unique
+  password   String
+  role       Role   @default(USER)
+
+  votes Vote[]
+}
+
+model Artwork {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  type        ArtworkType
+  creatorName String
+  members     String[] // only populated when type = GROUP
+  images      String[]
+  video       String?
+  createdAt   DateTime    @default(now())
+
+  votes Vote[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  artworkId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  artwork Artwork @relation(fields: [artworkId], references: [id])
+
+  @@unique([userId, artworkId]) // prevents duplicate votes
+}
+
+model Settings {
+  id              Int      @id @default(1)
+  votingStartTime DateTime
+  votingEndTime   DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([id]) // ensure only one row ever exists
+}
